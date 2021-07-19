@@ -8,7 +8,7 @@ class BoardSpec extends Specification
     {
         given:
 
-        def board = new Board(new Dimensions(1, 1), [1])
+        def board = new Board(singleDigitBoard(5))
 
         when:
 
@@ -18,26 +18,7 @@ class BoardSpec extends Specification
 
         display == """\
 *---*
-| 1 |
-*---*
-"""
-    }
-
-    void "should display board given any number"()
-    {
-        given:
-
-        def board = new Board(new Dimensions(1, 1), [2])
-
-        when:
-
-        def display = board.display()
-
-        then:
-
-        display == """\
-*---*
-| 2 |
+| 5 |
 *---*
 """
     }
@@ -46,7 +27,13 @@ class BoardSpec extends Specification
     {
         given:
 
-        def board = new Board(new Dimensions(2, 1), [2,3])
+        def boardData = Stub(BoardData) {
+            getDimensions() >> new Dimensions(2, 1)
+            getValue(new Coordinates(0, 0)) >> 2
+            getValue(new Coordinates(1, 0)) >> 3
+        }
+
+        def board = new Board(boardData)
 
         when:
 
@@ -65,7 +52,13 @@ class BoardSpec extends Specification
     {
         given:
 
-        def board = new Board(new Dimensions(1, 2), [2,3])
+        def boardData = Stub(BoardData) {
+            getDimensions() >> new Dimensions(1, 2)
+            getValue(new Coordinates(0, 0)) >> 2
+            getValue(new Coordinates(0, 1)) >> 3
+        }
+
+        def board = new Board(boardData)
 
         when:
 
@@ -86,7 +79,15 @@ class BoardSpec extends Specification
     {
         given:
 
-        def board = new Board(new Dimensions(2, 2), [2,3,5,7])
+        def boardData = Stub(BoardData) {
+            getDimensions() >> new Dimensions(2, 2)
+            getValue(new Coordinates(0, 0)) >> 2
+            getValue(new Coordinates(1, 0)) >> 3
+            getValue(new Coordinates(0, 1)) >> 5
+            getValue(new Coordinates(1, 1)) >> 7
+        }
+
+        def board = new Board(boardData)
 
         when:
 
@@ -107,7 +108,7 @@ class BoardSpec extends Specification
     {
         given:
 
-        def board = new Board(new Dimensions(1, 1), [11])
+        def board = new Board(singleDigitBoard(11))
 
         when:
 
@@ -126,7 +127,7 @@ class BoardSpec extends Specification
     {
         given:
 
-        def board = new Board(new Dimensions(1, 1), [101])
+        def board = new Board(singleDigitBoard(101))
 
         when:
 
@@ -145,7 +146,7 @@ class BoardSpec extends Specification
     {
         given:
 
-        def board = new Board(new Dimensions(1, 1), [null])
+        def board = new Board(singleDigitBoard(null))
 
         when:
 
@@ -160,73 +161,28 @@ class BoardSpec extends Specification
 """
     }
 
-    void "should allow entering in new values"()
+
+    void "should forward board value sets to board data"()
     {
         given:
 
-        def board = new Board(new Dimensions(3, 3), [null, null, null, null, null, null, null, null, null])
+        def boardData = Mock(BoardData)
+        def board = new Board(boardData)
 
         when:
 
-        board.setValue(1, 2, 3)
-        def display = board.display()
+        board.setValue(2, 3, 5)
 
         then:
 
-        display == """\
-*---*---*---*
-|   |   |   |
-*---*---*---*
-|   |   |   |
-*---*---*---*
-|   | 3 |   |
-*---*---*---*
-"""
+        1 * boardData.setValue(new Coordinates(2, 3), 5)
     }
 
-    void "should create an empty board if no data provided"()
+    private singleDigitBoard(Integer value)
     {
-        given:
-
-        def emptyBoard = new Board(new Dimensions(2, 2))
-
-        when:
-
-        def display = emptyBoard.display()
-
-        then:
-
-        display == """\
-*---*---*
-|   |   |
-*---*---*
-|   |   |
-*---*---*
-"""
-    }
-
-    void "should not allow modification of values outside bounds of the board"()
-    {
-        given:
-
-        def board = new Board(new Dimensions(3, 3))
-
-        when:
-
-        board.setValue(x, y, 3)
-
-        then:
-
-        thrown(IndexOutOfBoundsException)
-
-        where:
-
-        x  | y
-        -1 | 0
-        0  | -1
-        -1 | -1
-        1  | 3
-        3  | 1
-        3  | 3
+        return Stub(BoardData) {
+            getDimensions() >> new Dimensions(1, 1)
+            getValue(_) >> value
+        }
     }
 }

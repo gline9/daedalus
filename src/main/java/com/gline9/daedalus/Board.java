@@ -9,19 +9,14 @@ public class Board
 {
     private final BoardData boardData;
 
-    public Board(Dimensions dimensions)
+    public Board(BoardData boardData)
     {
-        this.boardData = new BoardData(dimensions);
-    }
-
-    public Board(Dimensions dimensions, List<Integer> data)
-    {
-        this.boardData = new BoardData(dimensions, data);
+        this.boardData = boardData;
     }
 
     public void setValue(int x, int y, int value)
     {
-        boardData.setValue(x, y, value);
+        boardData.setValue(new Coordinates(x, y), value);
     }
 
     public String display()
@@ -36,7 +31,7 @@ public class Board
         StringBuilder ret = new StringBuilder();
 
         ret.append(IntStream.range(0, boardData.getDimensions().getWidth())
-                .mapToObj(i -> boardData.getValue(i, rowNumber))
+                .mapToObj(i -> boardData.getValue(new Coordinates(i, rowNumber)))
                 .map(this::getCellDisplay)
                 .collect(Collectors.joining("|", "|", "|\n")));
         return ret.toString();

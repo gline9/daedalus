@@ -9,7 +9,8 @@ public class Main
     public static void main(String[] args)
     {
         Random rand = new Random();
-        Board sudoku = new Board(new Dimensions(9, 9), IntStream.range(0, 81).map((__) -> rand.nextInt(9) + 1 ).mapToObj(Integer::valueOf).collect(Collectors.toList()));
-        System.out.println(sudoku.display());
+        BoardData sudoku = new BoardDataImpl(new Dimensions(9, 9), IntStream.range(0, 81).map((__) -> rand.nextInt(9) + 1 ).mapToObj(Integer::valueOf).collect(Collectors.toList()));
+        Board sudokuBoard = new Board(sudoku);
+        System.out.println(sudokuBoard.display());
     }
 }
