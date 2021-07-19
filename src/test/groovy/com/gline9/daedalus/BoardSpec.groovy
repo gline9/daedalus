@@ -204,4 +204,29 @@ class BoardSpec extends Specification
 *---*---*
 """
     }
+
+    void "should not allow modification of values outside bounds of the board"()
+    {
+        given:
+
+        def board = new Board(new Dimensions(3, 3))
+
+        when:
+
+        board.setValue(x, y, 3)
+
+        then:
+
+        thrown(IndexOutOfBoundsException)
+
+        where:
+
+        x  | y
+        -1 | 0
+        0  | -1
+        -1 | -1
+        1  | 3
+        3  | 1
+        3  | 3
+    }
 }
